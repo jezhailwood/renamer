@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "renamer"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = [
+    "typer",
+    "rich",
+]
+license = "MIT"
+license-files = ["LICENSE"]
+
+[project.scripts]
+renamer = "renamer.cli:app"
+
+[tool.ruff]
+line-length = 88
+target-version = "py314"
+
+[tool.ruff.lint]
+select = [
+    "E", # pycodestyle error
+    "F", # Pyflakes
+    "I", # isort
+    "B", # flake8-bugbear
+    "UP", # pyupgrade
+    "D", # pydocstyle
+    "D401", # pydocstyle: non-imperative-mood
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
