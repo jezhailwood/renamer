@@ -31,5 +31,8 @@ select = [
     "D401", # pydocstyle: non-imperative-mood
 ]
 
+[tool.ruff.lint.per-file-ignores]
+"src/renamer/cli.py" = ["B008"]
+
 [tool.ruff.lint.pydocstyle]
 convention = "google"

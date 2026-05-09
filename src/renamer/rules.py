@@ -54,7 +54,7 @@ class ReplaceRule:
         self.old = old
         self.new = new
 
-    def apply(self, path: Path) -> Path:
+    def apply(self, path: Path) -> Path:  # noqa: D102
         return path.with_name(path.name.replace(self.old, self.new))
 
 
@@ -88,7 +88,7 @@ class RegexRule:
         self.pattern = pattern
         self.replacement = replacement
 
-    def apply(self, path: Path) -> Path:
+    def apply(self, path: Path) -> Path:  # noqa: D102
         return path.with_name(self._compiled.sub(self.replacement, path.name))
 
 
@@ -115,12 +115,15 @@ class CaseRule:
         mode: The `CaseMode` transformation to apply.
     """
 
-    def __init__(self, mode: CaseMode) -> None:
+    def __init__(self, mode: CaseMode) -> None:  # noqa: D107
         self.mode = mode
 
     def apply(self, path: Path) -> Path:
-        # Resolves to path.stem.upper(), path.stem.lower() or path.stem.title() at
-        # runtime, via the string method whose name matches the CaseMode enum value.
+        """Apply the case transformation to the filename stem.
+
+        Resolves to eg `path.stem.upper()` at runtime via the string method whose name
+        matches the `CaseMode` enum value.
+        """
         return path.with_name(getattr(path.stem, self.mode.value)() + path.suffix)
 
 
@@ -131,10 +134,10 @@ class PrefixRule:
         prefix: The string to prepend.
     """
 
-    def __init__(self, prefix: str) -> None:
+    def __init__(self, prefix: str) -> None:  # noqa: D107
         self.prefix = prefix
 
-    def apply(self, path: Path) -> Path:
+    def apply(self, path: Path) -> Path:  # noqa: D102
         return path.with_name(self.prefix + path.name)
 
 
@@ -145,8 +148,8 @@ class SuffixRule:
         suffix: The string to append.
     """
 
-    def __init__(self, suffix: str) -> None:
+    def __init__(self, suffix: str) -> None:  # noqa: D107
         self.suffix = suffix
 
-    def apply(self, path: Path) -> Path:
+    def apply(self, path: Path) -> Path:  # noqa: D102
         return path.with_name(path.stem + self.suffix + path.suffix)
