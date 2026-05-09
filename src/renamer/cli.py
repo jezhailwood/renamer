@@ -94,7 +94,7 @@ def main(
         regex_pairs = parse_pairs(regex, delimiter, "regex")
     except ValueError as e:
         typer.echo(f"Error: {e}", err=True)
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
 
     # Construct an absolute, resolved path so the log file can be reliably excluded from
     # the file list, regardless of relative paths or symlinks.
@@ -123,7 +123,7 @@ def main(
         plan = build_plan(paths, rules)
     except ValueError as e:
         typer.echo(f"Error: {e}", err=True)
-        raise typer.Exit(code=1)
+        raise typer.Exit(code=1) from None
 
     if not plan:
         typer.echo("Nothing to rename.")
