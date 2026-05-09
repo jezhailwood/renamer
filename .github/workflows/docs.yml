@@ -1,0 +1,41 @@
+name: Publish docs
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+      - name: Install dependencies
+        run: pip install pdoc -e .
+      - name: Build docs
+        run: pdoc src/renamer -d google --no-include-undocumented -o docs/
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
