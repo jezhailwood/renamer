@@ -10,7 +10,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from renamer.rules import RenameRule
+from .rules import RenameRule
 
 logger = logging.getLogger(__name__)
 

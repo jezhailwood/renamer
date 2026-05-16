@@ -20,9 +20,9 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
-from renamer.engine import RenamePlan, apply_plan, build_plan
-from renamer.logger import setup_logging
-from renamer.rules import (
+from .engine import RenamePlan, apply_plan, build_plan
+from .logger import setup_logging
+from .rules import (
     CaseMode,
     CaseRule,
     PrefixRule,
