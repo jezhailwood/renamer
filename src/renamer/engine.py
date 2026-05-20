@@ -74,11 +74,27 @@ def build_plan(paths: Sequence[Path], rules: Sequence[RenameRule]) -> list[Renam
 def apply_plan(plan: list[RenamePlan]) -> None:
     """Execute a rename plan on disk.
 
-    Renames each file from its `src` to its `dst` path.
+    Renames each file from its `src` to its `dst` path. Failed operations are logged and
+        skipped; remaining renames continue.
 
     Args:
         plan: The list of rename operations to perform.
+
+    Raises:
+        RuntimeError: If one or more renames fail, after all operations have been
+            attempted.
     """
+    failures = []
+
     for op in plan:
-        op.src.rename(op.dst)
-        logger.info("renamed: %s → %s", op.src, op.dst)
+        try:
+            op.src.rename(op.dst)
+            logger.info("renamed: %s → %s", op.src, op.dst)
+        except OSError as e:
+            logger.error("failed to rename %s → %s: %s", op.src, op.dst, e)
+            failures.append(op)
+
+    if failures:
+        raise RuntimeError(
+            f"{len(failures)} of {len(plan)} rename(s) failed - see log for details"
+        )

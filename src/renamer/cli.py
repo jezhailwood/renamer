@@ -137,7 +137,12 @@ def main(
             typer.echo("Aborted.")
             raise typer.Exit()  # Clean exit; code defaults to 0.
 
-    apply_plan(plan)
+    try:
+        apply_plan(plan)
+    except RuntimeError as e:
+        typer.echo(f"Error: {e}", err=True)
+        raise typer.Exit(code=1) from e
+
     typer.echo("Done.")
 
 
