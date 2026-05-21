@@ -17,8 +17,10 @@ Typical `renamer` usage:
 from pathlib import Path
 
 import typer
+from rich.box import SIMPLE_HEAD
 from rich.console import Console
 from rich.table import Table
+from rich.text import Text
 
 from .engine import RenamePlan, apply_plan, build_plan
 from .logger import setup_logging
@@ -178,23 +180,39 @@ def parse_pairs(
     return pairs
 
 
+def _style_path(path: Path, style: str = "") -> Text:
+    text = Text()
+    if path.parent != Path("."):
+        text.append(str(path.parent) + "/", style="dim")
+    text.append(path.name, style=style)
+    return text
+
+
 def preview_table(plan: list[RenamePlan], target: Path) -> None:
     """Render a Rich table summarising the planned renames.
 
-    Paths are displayed relative to `target`. The source column is dimmed and the table
-    title includes the total number of files to be renamed.
+    Paths are displayed relative to `target`. Directory components are dimmed, with the
+    destination filename highlighted in green.
 
     Args:
         plan: The list of planned rename operations to display.
         target: The base directory, used to compute relative paths.
     """
-    table = Table(title=f"Rename preview — {len(plan)} file(s)")
-    table.add_column("from", style="dim")
+    table = Table(
+        title=f"Rename preview - {len(plan)} file(s)",
+        box=SIMPLE_HEAD,
+    )
+    table.add_column("from")
+    table.add_column("", style="dim")
     table.add_column("to")
 
     for rename in plan:
         table.add_row(
-            str(rename.src.relative_to(target)), str(rename.dst.relative_to(target))
+            _style_path(rename.src.relative_to(target)),
+            "→",
+            _style_path(rename.dst.relative_to(target), "green"),
         )
 
-    Console().print(table)
+    console = Console()
+    console.line()
+    console.print(table)
