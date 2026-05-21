@@ -74,8 +74,8 @@ def build_plan(paths: Sequence[Path], rules: Sequence[RenameRule]) -> list[Renam
 def apply_plan(plan: list[RenamePlan]) -> None:
     """Execute a rename plan on disk.
 
-    Renames each file from its `src` to its `dst` path. Failed operations are logged and
-        skipped; remaining renames continue.
+    Renames each file from its `src` to its `dst` path. Failures are logged and do not
+    abort remaining operations.
 
     Args:
         plan: The list of rename operations to perform.

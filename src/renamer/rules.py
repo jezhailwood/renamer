@@ -84,7 +84,7 @@ class RegexRule:
             # than during a rename operation.
             self._compiled = re.compile(pattern)
         except re.error as e:
-            raise ValueError(f"invalid regex pattern '{pattern}' ({e})") from e
+            raise ValueError(f"invalid regex pattern '{pattern}': {e}") from e
         self.pattern = pattern
         self.replacement = replacement
 
