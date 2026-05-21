@@ -52,8 +52,10 @@ def main(
     """Batch-rename files in a directory using composable rules.
 
     Finds files in `path` (or the current working directory if omitted), applies
-    the specified rules and displays a preview table. Prompts for confirmation before
-    applying unless `--yes` is passed. Hidden files are excluded, as is the log file.
+    the specified rules and displays a preview table. Files are sorted by directory
+    depth, then alphabetically by directory, then by filename. Prompts for confirmation
+    before applying unless `--yes` is passed. Hidden files are excluded, as is the
+    log file.
 
     Rules are always applied in the order: `--replace`, `--regex`, `--case`, `--prefix`,
     `--suffix`, regardless of the order arguments are given on the command line.
@@ -99,15 +101,20 @@ def main(
     # Construct an absolute, resolved path so the log file can be reliably excluded from
     # the file list, regardless of relative paths or symlinks.
     log_file_resolved = (target / LOG_FILE).resolve()
-    paths = [
-        p
-        for p in (target.rglob("*") if recursive else target.iterdir())
-        if p.is_file()  # Exclude directories.
-        and not any(
-            part.startswith(".") for part in p.relative_to(target).parts
-        )  # Exclude hidden files, including any files within hidden directories.
-        and p.resolve() != log_file_resolved  # Exclude the log file.
-    ]
+    paths = sorted(
+        (
+            p
+            for p in (target.rglob("*") if recursive else target.iterdir())
+            if p.is_file()  # Exclude directories.
+            and not any(
+                part.startswith(".") for part in p.relative_to(target).parts
+            )  # Exclude hidden files, including any files within hidden directories.
+            and p.resolve() != log_file_resolved  # Exclude the log file.
+        ),
+        # Sorts by directory depth first (shorter parent.parts tuples sort before longer
+        # ones), then alphabetically by directory, then by filename.
+        key=lambda p: (p.relative_to(target).parent.parts, p.name),
+    )
 
     try:
         # Rule type order is fixed regardless of argument order on the command line.
