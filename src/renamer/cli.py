@@ -77,7 +77,7 @@ def main(
     """
     if not replace and not regex and case is None and not prefix and not suffix:
         typer.echo(
-            "Error: at least one --replace, --regex, --case, --prefix or --suffix "
+            "renamer: error: at least one --replace, --regex, --case, --prefix or --suffix "
             "is required",
             err=True,
         )
@@ -85,10 +85,10 @@ def main(
 
     target = path or Path.cwd()
     if not target.exists():
-        typer.echo(f"Error: path '{target}' does not exist", err=True)
+        typer.echo(f"renamer: error: path '{target}' does not exist", err=True)
         raise typer.Exit(code=1)
     if not target.is_dir():
-        typer.echo(f"Error: path '{target}' is not a directory", err=True)
+        typer.echo(f"renamer: error: path '{target}' is not a directory", err=True)
         raise typer.Exit(code=1)
 
     setup_logging(log_file=target / LOG_FILE)
@@ -97,7 +97,7 @@ def main(
         replace_pairs = parse_pairs(replace, delimiter, "replace")
         regex_pairs = parse_pairs(regex, delimiter, "regex")
     except ValueError as e:
-        typer.echo(f"Error: {e}", err=True)
+        typer.echo(f"renamer: error: {e}", err=True)
         raise typer.Exit(code=1) from None
 
     # Construct an absolute, resolved path so the log file can be reliably excluded from
@@ -131,7 +131,7 @@ def main(
         )
         plan = build_plan(paths, rules)
     except ValueError as e:
-        typer.echo(f"Error: {e}", err=True)
+        typer.echo(f"renamer: error: {e}", err=True)
         raise typer.Exit(code=1) from None
 
     if not plan:
@@ -149,7 +149,7 @@ def main(
     try:
         apply_plan(plan)
     except RuntimeError as e:
-        typer.echo(f"Error: {e}", err=True)
+        typer.echo(f"renamer: error: {e}", err=True)
         raise typer.Exit(code=1) from e
 
     typer.echo("Done.")
